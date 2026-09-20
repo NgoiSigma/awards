@@ -8,9 +8,15 @@ body:
         **Only the contributor may submit this claim. Do not apply or collect an award on someone else's behalf.**
         Your submitting GitHub account is the applicant account. Select both roles if you are claiming both contributions. Update an existing claim instead of submitting a duplicate.
 
-        Keep private contact details, identity documents and private confirmation materials out of this issue.
+        Apply after the relevant solution/proof PR has merged. Mathematical-solution-only applicants may leave the Lean repository blank; maintainers use the recorded source if one exists. A solver whose complete solution is accepted may also register a claim while formalization is missing. That application is retained without starting public review or permitting payment. Submit new proofs through the normal PR template. Raise candidate or award challenges, including priority objections, through the Formal dispute issue form and link any proposed replacement PR.
 
-        Before identity confirmation, use your GitHub account or an existing RECIPIENT-<ENTRY>-A placeholder rather than publishing an unconfirmed real-name identity. A submitted form or checked declaration is not identity verification or award approval.
+        When an accepted formalization source is available, each contribution type's 14-day public review starts when its candidate is added to the public register in candidates/ and public notice begins. The recorded public-notice start, not a PR merge time, determines the period. Claims and identity checks proceed alongside that review. A successful priority challenge replaces the affected candidate; that contribution type's new 14-day period starts when the replacement is added to candidates/ and its public notice begins. Before concluding public review, maintainers check pending PRs for the same problem and contribution type (mathematical solution or Lean formalization), regardless of submitter, and wait for reviews that could affect correctness, contribution attribution or priority. Final awards require the full review period, resolution of challenges and relevant pending PR reviews, and written recipient confirmation. See the [award process](https://github.com/TheJustinSunPrize/awards/blob/main/docs/award-process.md).
+
+        Mathematical review remains required, but the two contribution types can be registered independently. Lean verification and candidate registration do not require the solver to have registered or claimed an award. A solver awaiting formalization can have an application record, but its 14-day review has not started.
+
+        Use your GitHub account as your identity here. Send private identity materials, payment addresses and medal delivery addresses only by email to thejustinsunprize@hejustinsun.com. Official email comes only from @hejustinsun.com; we never ask for private keys or seed phrases.
+
+        A submitted form or checked declaration is not identity verification or award approval.
   - type: input
     id: entry
     attributes:
@@ -20,19 +26,11 @@ body:
     validations:
       required: true
   - type: input
-    id: lean_repository
+    id: submission_pr
     attributes:
-      label: Original Lean proof repository
-      description: Provide the original public GitHub repository containing the Lean proof. The repository owner must be the same GitHub account that submits this issue. Do not use a mirror or collection of someone else's proof. Maintainers check repository ownership and the formalization author attribution separately.
-      placeholder: https://github.com/YOUR_GITHUB_USERNAME/REPOSITORY
-    validations:
-      required: true
-  - type: input
-    id: contact_email
-    attributes:
-      label: Follow-up contact email
-      description: Provide an email address for follow-up communication that you agree to make public in this issue. A dedicated public contact email is recommended. This address alone does not verify your identity or authorship.
-      placeholder: contact@example.org
+      label: Merged submission PR
+      description: Link the merged PR recording the contribution you are claiming. Include both PRs if your two roles were accepted separately.
+      placeholder: https://github.com/TheJustinSunPrize/awards/pull/123
     validations:
       required: true
   - type: dropdown
@@ -46,16 +44,32 @@ body:
         - Both mathematical solution and Lean formalization
     validations:
       required: true
+  - type: input
+    id: lean_repository
+    attributes:
+      label: Original Lean proof repository
+      description: Required for Lean formalization or Both claims; provide the original repository already recorded as this problem's formalization source. It may belong to your submitting account or an organization. Organization repositories require verifiable evidence of your contribution; reference it in the attribution field below. Mirrors or copies of another person's proof do not qualify. Optional for Mathematical solution only; leave blank or link the recorded source even if owned by someone else.
+      placeholder: https://github.com/OWNER/REPOSITORY (solver-only applicants may leave blank)
+    validations:
+      required: false
+  - type: input
+    id: contact_email
+    attributes:
+      label: Follow-up contact email
+      description: This address is public and will be used for follow-up; no extra comment is needed to designate it. All applicants must send an identity-verification email to thejustinsunprize@hejustinsun.com from this address after opening the claim issue, linking this issue and their merged PR. This address alone does not verify identity or authorship.
+      placeholder: contact@example.org
+    validations:
+      required: true
   - type: textarea
     id: identity_verification
     attributes:
       label: Identity verification method
-      description: Required for mathematical solver claims, including Both, and for Lean claims whose account-to-author connection is not established by the source attribution. Describe how maintainers can independently verify your identity. Examples include emailing thejustinsunprize@hejustinsun.com from an author email listed in the paper, responding through an established institutional or author website, or using a historical signing key already linked to the author. Other independently verifiable methods may be proposed. Lean-only applicants may leave this blank if the source attribution already establishes their account-to-author connection. If claiming both roles, explain how your mathematical author identity connects to this account. Name the method here; send private evidence through the maintainer-designated channel, not this issue.
+      description: Optional public note naming the method only; send the required identity-verification method and materials by email, not here. All applicants, including Lean-only and Both claims, must send an identity-verification email from the follow-up address above to thejustinsunprize@hejustinsun.com, linking the claim issue and merged PR. Existing source attribution does not waive this requirement. Methods include a paper-listed author mailbox, an established institutional or author website, a historical signing key, or another independently verifiable method. Use the email template in the award process. All recipients still require written confirmation before an award.
   - type: textarea
     id: attribution_clarification
     attributes:
-      label: Identity or attribution clarification (if needed)
-      description: Leave blank if the catalog already identifies your contribution clearly. Explain only what is needed to connect your applicant account to the credited contributor, such as bot commits or a shared project account. Link a correction issue or PR if the catalog needs updating. Do not repeat proof materials or post private identity information.
+      label: Contribution evidence and attribution clarification
+      description: For an organization repository, link verifiable evidence connecting your account to the claimed proof files or theorems, such as merged PRs, attributable changes or project authorship records; you may reference evidence already recorded in the catalog or merged submission PR. Organization membership or repository access alone is insufficient. Otherwise leave blank if attribution is clear, or explain any bot/shared-account mismatch. Link a correction issue or PR if needed. Do not post private identity information.
   - type: textarea
     id: related_claims
     attributes:
@@ -68,9 +82,15 @@ body:
     attributes:
       label: Applicant declarations
       options:
+        - label: The relevant contribution PR has merged. If I am a solver awaiting formalization, I understand that my application is retained without starting public review or permitting payment.
+          required: true
         - label: I am applying for my own contribution using my own GitHub account, not applying or collecting on behalf of another person.
           required: true
         - label: My claim concerns my own contribution to the complete solution or Lean proof referenced in the identified problem-bank entry. I have identified any attribution discrepancies that need review.
+          required: true
+        - label: If claiming Lean formalization or Both, I have provided the original proof repository URL and, for an organization repository, linked verifiable evidence of my contribution. For Mathematical solution only, the repository field may be blank.
+          required: true
+        - label: I understand that every applicant must send an identity-verification email from the follow-up address above to thejustinsunprize@hejustinsun.com after opening this issue, linking this issue and the merged PR, including for Lean-only claims with existing authorship evidence.
           required: true
         - label: I have disclosed related claims and attribution conflicts and will complete the maintainer's contribution and identity verification before claiming payment.
           required: true
