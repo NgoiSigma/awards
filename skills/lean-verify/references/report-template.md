@@ -1,73 +1,72 @@
-# 中文验证报告结构
+# Verification report template
 
-生成 `report.md` 时保留以下实质信息；不适用项写明原因。多个题目分别报告，不把某题的通过结论复制给同一 PR 的其他题目。不把本模板的提示文字当作检查结果。
+Write `report.md` in English by default, unless the user requests another language. Include the substantive information below and explain inapplicable items. Report each problem separately; do not transfer one problem's pass to other problems in the PR. Template prompts are not observed results.
 
-## 结论
+## Conclusion
 
-报告和最终回复都以明确结论开头，不能用“详见报告”代替判断。采用以下结构，填入实际结果；不是把所有选项原样输出：
+Start both the report and final response with an explicit verdict rather than "see the report." Fill in actual results using this structure; do not repeat every option unchanged:
 
-> **总体结论：验证通过 / 有条件通过 / 部分覆盖 / 验证失败 / 证据不足。**
+> **Overall verdict: Verification passed / Conditional pass / Partial coverage / Verification failed / Insufficient evidence.**
 >
-> 对于 JSP/Erdős 题号或指定原题，在证明仓库的完整 commit SHA 上，该提交已完整解决 / 未完整解决 / 暂无法确认完整解决指定原题。决定性理由：具体证据。
+> For the specified JSP/Erdős problem or original statement, this submission at the full proof-repository commit SHA fully solves / does not fully solve / cannot yet be confirmed to fully solve the original problem. Decisive reason: specific evidence.
 
-| 必答问题 | 明确判断 | 决定性依据 |
+| Required question | Explicit judgment | Decisive evidence |
 | --- | --- | --- |
-| 证明对象是否就是指定原题？ | 是 / 否 / 暂无法确认 | 原题与定义、量词、假设、结论的对应 |
-| 指定 commit 是否实际验证通过？ | 是 / 否 / 未完成验证 | 目标检查命令、退出码及日志 |
-| 是否完整解决原题？ | 是 / 否 / 暂无法确认 | 全部义务覆盖、证明链和公理检查 |
-| 是否满足本次验证的 Lean 完整性要求？ | 满足 / 不满足 / 暂无法确认 | 按 SKILL.md 的验收规则汇总 |
+| Does the proof address the specified original problem? | Yes / No / Cannot yet determine | Correspondence of definitions, quantifiers, assumptions, and conclusions |
+| Did the specified commit actually pass verification? | Yes / No / Verification incomplete | Target-check commands, exit codes, and logs |
+| Does it fully solve the original problem? | Yes / No / Cannot yet determine | Coverage of all obligations, proof chain, and axiom audit |
+| Does it meet the Lean completeness requirements for this verification? | Meets / Does not meet / Cannot yet determine | Assessment under SKILL.md's acceptance rules |
 
-补充实际复核级别、扩展信任条件和适用范围。只有构建成功时不得推断完整解决原题；网络/资源阻塞不得表述为数学证明错误。若有条件通过，写明该条件是否被适用验收标准接受，未知时验收判“暂无法确认”。若不能确认，列出缺什么、影响哪一项判断、怎样补齐；若不满足，列出必须修正的具体问题。这一结论只涉及 Lean 证明验证，不决定合并、授奖或支付。
+State actual verification levels, extended trust conditions, and scope. A successful build alone does not establish a complete solution. Network/resource blockers are not mathematical proof errors. For a conditional pass, state whether the applicable acceptance criteria accept the condition; if unknown, the acceptance judgment is "Cannot yet determine." For uncertainty, list what is missing, the affected judgments, and how to resolve it. For unmet requirements, identify the specific defects to fix. This conclusion concerns Lean proof verification, not merging, awards, or payments.
 
-多题 PR 再提供逐题汇总：
+For multi-problem PRs, also provide a per-problem summary:
 
-| 题号与名称 | 溯源 | 命题对应 | 原样构建/目标检查 | 证明完整性 | 全题覆盖 | 结论 |
+| Problem ID and name | Traceability | Statement correspondence | Unmodified build/target checks | Proof completeness | Full problem coverage | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| 每题一行 | 通过/缺失/冲突 | 一致/不符/未知 | 成功/失败/未完成 | 完整/缺口/未知 | 全部/部分/未知 | 带理由 |
+| One row per problem | Verified/missing/conflicting | Matches/mismatch/unknown | Passed/failed/incomplete | Complete/gaps/unknown | Full/partial/unknown | With reasons |
 
-无 PR 时，验收一项明确适用的是本 skill 的完整性标准；如用户另有标准则列出。awards base/head、JSP 编号等不适用字段写“不适用”，不能编造。
+Without a PR, identify this skill's completeness criteria as the acceptance standard, or state any user-specified criteria. Mark inapplicable awards base/head fields, JSP identifiers, and similar fields "Not applicable" rather than inventing values.
 
-## 固定证据
+## Pinned evidence
 
-- 获取时间（含时区）、PR URL、awards base/head 仓库、branch、完整 SHA；末次检查 PR 是否前进。
-- 题库 base/head 的固定链接、JSP 编号、原始题号、精确题意来源、论文版本/页码。
-- Lean 仓库 URL、项目根目录、声称的 branch、branch tip、实际验证 SHA、commit 与 branch 的包含关系及检查时间。
-- 原始源码链接与 commit 固定的文件/行链接、所有目标声明完全限定名；附件/Gist 的 revision/哈希。
-- 不同来源给出的版本冲突、缺失 pin、无法读取的评论或资料；临时快照与提交者指定版本分开标记。
+- Retrieval time with timezone, PR URL, awards base/head repositories, branches, and full SHAs; whether PR head changed at the final check.
+- Pinned catalog base/head links, JSP and original problem identifiers, exact problem sources, paper versions/pages.
+- Lean repository URL, project root, claimed branch, branch tip, checked SHA, commit/branch ancestry, and check time.
+- Original source links, commit-pinned file/line links, and all fully qualified target declarations; attachment/Gist revisions/hashes.
+- Revision conflicts, missing pins, inaccessible comments/materials; distinguish temporary snapshots from submitter-specified revisions.
+- `targets.json` path and hash, project/commit for each manifest, and whether the original problem, formal statement, and external proof belong to different versions.
 
-- `targets.json` 路径与哈希；各清单对应的工程/commit，以及原题、命题声明、外部证明是否分属不同版本。
+## Mathematical statement and coverage
 
-## 数学命题与覆盖
+Provide the exact original statement, readable excerpts of the Lean target and necessary definitions, and an explanation of their correspondence. Complete the coverage matrix; list equivalence/implication bridges and their check results. Include every direction, range, subproblem, and boundary condition.
 
-给出原题精确陈述、Lean 目标声明及必要定义的可读摘录、两者对应解释。填写命题覆盖矩阵；列出等价变换/蕴涵桥梁及其检查结果。全题每个方向、范围、子问题和边界条件都能在矩阵中找到。
+Describe minimal, reproducible mismatches, such as "the original requires all n, but the declaration covers only n ≤ 100" or "the main theorem still takes its conclusion as an argument." Do not merely label the formalization incomplete.
 
-发现问题时写最小、可复核的差异，例如“原题要求所有 n，声明仅对 n ≤ 100”或“主定理仍以结论为参数”。不要只写笼统的“形式化不完整”。
+## Environment and execution
 
-## 环境与执行
-
-| 项目 | 实际值与证据 |
+| Item | Observed value and evidence |
 | --- | --- |
-| OS/架构/隔离方式 | 版本、容器 image digest 或等效环境、资源限制 |
-| 工具链 | `lean-toolchain`、Lean/Lake/Elan 版本、来源与路径 |
-| 依赖 | manifest 哈希、mathlib 和其他依赖的实际 SHA、缓存来源 |
-| 原样构建 | 命令、cwd、退出码、耗时、日志路径 |
-| 显式目标检查 | 每个模块/文件对应命令与结果，是否重新检查源码 |
-| 语义桥梁与公理审计 | 审计文件、命令、输出、退出码 |
-| kernel/外部复核 | 工具版本、配置/目标、日志；未运行则说明原因 |
-| 运行后状态 | 源码/依赖变动、未跟踪审计文件及其位置 |
+| OS/architecture/isolation | Versions, container image digest or equivalent environment, resource limits |
+| Toolchain | `lean-toolchain`, Lean/Lake/Elan versions, provenance, paths |
+| Dependencies | Manifest hash, actual mathlib/other dependency SHAs, cache provenance |
+| Unmodified build | Command, cwd, exit code, elapsed time, log path |
+| Explicit target checks | Commands/results for each module/file and whether source was rechecked |
+| Semantic bridges and axiom audit | Audit files, commands, output, exit codes |
+| Kernel/external cross-checks | Tool versions, configuration/targets, logs; reasons for checks not run |
+| Post-run state | Source/dependency changes, untracked audit files and locations |
 
-自动检查结果单列：`mechanical_status`、退出码、目标结果数量是否与清单一致、输入文件是否稳定、未完成的环境前置检查。人工语义结论与工具结果分别记录；不能把 `standard_axioms_only` 写成全题验收通过。
+Report automation separately: `mechanical_status`, exit code, whether target-result counts match the manifest, input stability, and outstanding environment prerequisites. Keep semantic judgments distinct from tool results; `standard_axioms_only` is not full-problem acceptance.
 
-## 证明依赖与缺口
+## Proof dependencies and gaps
 
-每个目标列出完整 `#print axioms` 结果，分类说明标准基础、公理占位、本机计算与自定义假设。对未完成步骤给出目标到问题依赖的路径。说明哪些全仓库警告与目标无关，哪些实际进入证明链。
+For each target, list complete `#print axioms` output and distinguish standard foundations, placeholder axioms, native computation, and custom assumptions. For unfinished steps, show the dependency path from target to problem. Identify repository-wide warnings unrelated to the target and those that enter its proof chain.
 
-## 发现、限制和下一步
+## Findings, limitations, and next steps
 
-按阻碍完整验证的程度排列发现。每项提供：要求 → 观测 → 固定代码/原文位置 → 检查日志 → 结论影响 → 最小修复或补充证据。区分已确认缺陷、疑点和环境阻塞。
+Order findings by their effect on complete verification. For each, include: requirement → observation → pinned code/original-source location → check logs → effect on the verdict → minimal repair or additional evidence. Distinguish confirmed defects, concerns, and environmental blockers.
 
-列明尚未审查的材料、外部信任范围、专家语义复核需求。若做了诊断补丁，附 diff 并把补丁版结果单列，不改变原提交结论。不要从复现报告推导奖项批准、支付或作者身份结论。
+List unreviewed material, external trust, and any need for expert semantic review. If diagnostic patches were used, attach the diff and separate patched results from the original submission's verdict. Do not infer award approval, payment, or author identity from reproduction results.
 
-## 可复现产物
+## Reproducible artifacts
 
-链接 `evidence/` 快照、锁定版本清单、环境配置、`audit/` 文件、`logs/` 完整记录、独立检查产物和诊断补丁。记录每条重现命令的执行目录、顺序及真实参数，避免要求读者从对话补全必要信息。公开分享前移除凭据和私人信息；本技能本身不自动上传。
+Link `evidence/` snapshots, pinned-version manifests, environment configuration, `audit/` files, complete `logs/`, independent checker artifacts, and diagnostic patches. Record working directory, order, and actual arguments for each reproduction command so readers need not reconstruct missing context from the conversation. Remove credentials and private information before public sharing; this skill does not upload automatically.

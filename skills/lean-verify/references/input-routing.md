@@ -1,27 +1,27 @@
-# 输入定位：awards、Erdős 与直接源码
+# Input routing: awards, Erdős, and direct source
 
-先判断用户要验证一个已有证明，还是仅询问方法/技能。方法咨询不应触发源码部署，也不强行输出某个提交的通过/失败判定。保持只读验收范围，不自动补证明、修改题库或发布评论。
+First distinguish verification of an existing proof from a question about methods or skills. Method questions do not trigger source deployment or a pass/fail judgment on an arbitrary submission. Keep the review read-only with respect to the submission: do not automatically repair proofs, modify the catalog, or publish comments.
 
-## awards PR
+## Awards PR
 
-先确认提交是否包含待核验的 Lean 证明。仅有数学解答、论文或解题者信息时，本技能不适用，不启动 Lean 环境或索取自查报告；同时提交两类贡献时只核验 Lean 部分。不要因解题者未提供 Lean 证明而否定其数学解答提交。
+First check whether the submission includes a Lean proof to verify. This skill does not apply to mathematical solutions, papers, or solver information alone; do not start a Lean environment or request a self-check report for them. For combined submissions, verify only the Lean part. A missing Lean proof does not invalidate a solver's mathematical submission.
 
-沿用 SKILL.md 的 base/head、JSP 条目、讨论和外部证明版本流程。JSP 与 Erdős 编号独立；题库引用 Erdős 时同时保存两种编号及映射证据。
+Follow SKILL.md for base/head snapshots, JSP entries, discussions, and external proof revisions. JSP and Erdős numbers are independent; when the catalog cites Erdős, retain both identifiers and evidence for their mapping.
 
-## Erdős 题号或问题链接
+## Erdős problem number or URL
 
-1. 明确输入是 Erdős 编号；裸数字在无法判定是 PR/JSP/Erdős 编号时询问。仅网站首页不足以选定验证对象。
-2. 读取 `https://www.erdosproblems.com/题号` 的完整原题、上下文、变体与引用资料，记录抓取时间；把主问题、附加问题、特殊情形分开。访问受限时尝试原始论文或可追溯的原文快照，注明版本和缺口；不能用搜索摘要补成“已核对原题”。
-3. 使用页面链接及 [teorth/erdosproblems](https://github.com/teorth/erdosproblems)、[Formal Conjectures](https://github.com/google-deepmind/formal-conjectures) 定位线索，先读其当前数据格式，不把某字段名或文件路径当作永久接口。缓存数据库的状态只是线索，核实来源和更新时间。
-4. **分别固定三种对象**：原题来源；命题形式化文件及 commit；实际解答证明的仓库/commit/声明。命题文件中的外部证明链接需继续追踪，不能拿命题仓库的编译成功代替外部证明检查。通用仓库链接或单个 `.lean` 链接都不证明已存在完整解答。
-5. 分类记录：只有命题声明 / 声称部分结果 / 声称条件性结果 / 声称完整证明或完整反证 / 未找到证明源码。区分网站数学状态与 Lean 证明状态。声明仓库中的占位 `sorry` 不等于外部解答含 `sorry`；最终以实际目标证明链为准。
-6. 有多个解答时先用用户指定版本；无指定版本则列候选及各自声称范围，不能随意挑一个称为“该题已验证”。可继续读取原题和候选元数据，必要时询问待核验版本。仅给分支时按 SKILL.md 固定临时审计快照，不冒充历史提交版本。
+1. Confirm that the input is an Erdős number. Ask if a bare number could mean a PR, JSP entry, or Erdős problem. The website homepage alone does not identify a verification target.
+2. Read the complete original problem, context, variants, and cited sources at `https://www.erdosproblems.com/N`, recording retrieval time. Separate the main problem, additional questions, and special cases. If access is limited, try original papers or traceable snapshots and record their versions and gaps; search snippets cannot establish that the original problem was checked.
+3. Follow page links and leads from [teorth/erdosproblems](https://github.com/teorth/erdosproblems) and [Formal Conjectures](https://github.com/google-deepmind/formal-conjectures). Inspect their current data formats rather than treating a field name or path as a permanent interface. Cached database status is only a lead; check its source and update time.
+4. **Pin three distinct objects:** the original problem source; the formal statement file and commit; and the actual solution repository/commit/declaration. Follow external proof links from statement files. Building the statement repository does not verify an external proof. A generic repository URL or single `.lean` link does not establish that a complete solution exists.
+5. Classify the available material: statement only / claimed partial result / claimed conditional result / claimed complete proof or disproof / no proof source located. Distinguish website mathematical status from Lean proof status. A placeholder `sorry` in a statement repository does not imply that an external solution contains `sorry`; inspect the actual target proof chain.
+6. If several solutions exist, use the user-specified version first. Otherwise list candidates and their claimed scope rather than arbitrarily selecting one and declaring the problem verified. Continue reading the original problem and candidate metadata, and ask which version to check when necessary. For branch-only inputs, pin a temporary audit snapshot as described in SKILL.md; do not present it as the historical submission.
 
-未发现源码时报告“尚无可核验的解答源码”，不能推断不存在任何 Lean 证明。明确只有未证明声明时可判该声明不构成完整解答；不能把这个判断扩大到该题所有成果。对条件性文献结果保留明确假设，按主 skill 标准判断是否仍有未证明义务，不因网站收录就降低验收标准。
+When no source is found, report "No verifiable solution source has been located," not that no Lean proof exists. If the material is clearly only an unproved statement, conclude that this statement is not a complete solution without extending that judgment to every result for the problem. Retain explicit assumptions in conditional literature results and apply the main skill's completeness criteria; website inclusion does not relax acceptance standards.
 
-## 直接证明仓库、commit、文件或其他 PR
+## Direct proof repository, commit, file, or another PR
 
-- 要求可识别的原题来源和待检查声明；先从 README/正文定位，缺少时再询问。源码作者自己的改写不能成为唯一题意基准。
-- 其他 GitHub PR 同样快照 base/head 和相关完整讨论；对源码仓库与题目记录分开固定版本。不是 PR 的输入，PR 字段写不适用。
-- Gist、附件、单文件按复现参考记录 revision/内容哈希。脚本要求 Git+Lake 工程；不满足时可用受控 harness 人工核验，但不能把 harness 的构建称为原项目构建。
-- 无奖项 PR 时，第四项结论使用“是否满足本次验证的 Lean 完整性要求”，注明本 skill 或用户指定标准；不声称获 Erdős 网站、维护者或奖项官方认可。
+- Require an identifiable original problem source and declarations to check. Look in the README/body first and ask only if necessary. The source author's reformulation cannot be the sole specification.
+- For other GitHub PRs, also snapshot base/head and the complete relevant discussion. Pin source repositories and problem records separately. For non-PR inputs, mark PR fields not applicable.
+- For Gists, attachments, or single files, record revisions/content hashes following the reproduction reference. The script requires a Git+Lake project. If unavailable, use a controlled harness for manual checks, but do not call a harness build the original project build.
+- Without an awards PR, phrase the fourth conclusion as "Does it meet the Lean completeness requirements for this verification?" Identify this skill's criteria or the user's specified criteria. Do not imply endorsement by the Erdős website, maintainers, or prize organizers.

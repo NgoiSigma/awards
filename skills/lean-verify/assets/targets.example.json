@@ -13,7 +13,7 @@
       "requirements": [
         {
           "id": "main",
-          "description": "用原题精确要求替换；逐项补齐所有范围与子问题",
+          "description": "Replace with an exact original requirement; enumerate every scope condition and subproblem",
           "targets": [
             "main",
             "bridge"

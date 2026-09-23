@@ -1,114 +1,114 @@
 ---
 name: lean-verify
-description: "独立核验 awards PR、Erdős 题目或指定源码版本的 Lean 数学证明：固定原题及 commit，核对命题与覆盖范围，隔离复现并审计公理依赖，输出中文证据报告。仅适用于 Lean 证明核验，不要求仅提交数学解答的解题者使用；不自动补证明、修改提交或发布评审。"
+description: "Independently verify Lean mathematical proofs in awards PRs, Erdős problems, or pinned source revisions. Check the original statement, coverage, reproducibility, and axiom dependencies, then produce an English evidence report. Applies to Lean proofs, not solver-only submissions; does not repair proofs, modify submissions, or publish reviews automatically."
 ---
 
-# Lean 证明独立验证
+# Independent Lean proof verification
 
-验证对象是指定数学问题在指定源码 commit 上的完整形式化证明。分别回答：源码版本是否可追溯、形式命题是否表达原题、代码是否可复现检查、证明是否覆盖全部要求。不能以编译成功、作者声明、题库的 `Solved/Yes` 或 PR CI 代替这些结论。
+Verify a complete formal proof of a specified mathematical problem at a specified source commit. Assess source traceability, correspondence to the original problem, reproducibility, and coverage separately. A successful build, an author's claim, a catalog's `Solved/Yes` status, or PR CI cannot replace these conclusions.
 
-默认中文报告；保留 Lean 标识符、英文原题和原始日志。验证包括必要的依赖下载、隔离环境部署和本地审计文件；不包含修改原证明、升级工具链、提交 GitHub 评论、合并 PR 或更改题库状态。
+Write reports in English by default, unless the user requests another language. Preserve Lean identifiers, original problem statements, and raw logs. Verification includes necessary dependency downloads, isolated environment setup, and local audit files. It does not include modifying the original proof, upgrading its toolchain, posting GitHub comments, merging PRs, or changing catalog status.
 
-## 适用范围
+## Scope
 
-本技能是提交 Lean 证明前的推荐自查方式，不是提交 PR 的强制要求；贡献者可选择其他验证方式，不使用本技能本身不构成提交不合格。仅提交数学解答、论文或解题者信息的贡献者无需使用本技能，也无需提供 Lean 仓库、自查声明或验证报告；没有 Lean 证明不构成数学解答提交不合格。同时提交数学解答和 Lean 证明时，仅对其中的 Lean 部分执行本技能。
+This skill is a recommended pre-submission self-check for Lean proofs, not a requirement for opening a PR. Contributors may use other verification methods; not using this skill is not a submission defect. Contributors submitting only mathematical solutions, papers, or solver information need neither this skill nor a Lean repository, self-check declaration, or verification report. The absence of a Lean proof does not invalidate a mathematical submission. For combined submissions, apply this skill only to the Lean contribution.
 
-收到仅含数学解答的 PR 时，明确说明“Lean 验证不适用”并结束本技能流程，不要求补充 Lean 材料，不将其判为“验证失败”或“证据不足”。数学解答的正确性与贡献归属仍由相应的数学审核流程处理。
+For a solver-only PR, state "Lean verification is not applicable" and end this workflow. Do not request Lean materials or classify the submission as "Verification failed" or "Insufficient evidence." Mathematical correctness and attribution remain subject to the mathematical review process.
 
-## 输入与工作目录
+## Inputs and working directory
 
-- 接受 awards PR（允许 `/files`、`/commits` 和评论锚点并归一化）、Erdős 题号/问题链接，或附有原题来源的 Lean 仓库/commit/PR。awards 模式沿用 JSP 题库定位；Erdős 和直接源码模式先读 [输入定位](references/input-routing.md)。仅有首页或 PR 列表时，不任意选择题目/提交。
-- 用户可以指定历史 PR head、题号、验证范围、资源限制和输出目录。PR 输入未指定历史版本时，快照当前 PR head，核验 PR 涉及的全部题目及全部声称完成的 Lean 版本；其他入口按输入定位参考确定范围。
-- 在仓库外创建独立运行目录，例如系统临时目录中的 `lean-verify-题号或PR号-时间戳`；保存 `evidence/`、`sources/`、`audit/`、`logs/` 和 `report.md`。复用可信工具缓存可以，但不覆盖用户工作树。最终提供产物的绝对路径；临时目录产物应提醒其保存位置。
-- 只在缺少信息确实妨碍判定时提问；继续不依赖答案的检查。无法取得指定源码或原题时保留“证据不足”，不选择一个相似问题或最新分支顶替。
+- Accept awards PRs (normalize `/files`, `/commits`, and comment anchors), Erdős problem numbers/URLs, or Lean repositories/commits/PRs with an original problem source. Use JSP catalog entries in awards mode; for Erdős and direct-source inputs, first read [Input routing](references/input-routing.md). A homepage or PR list alone does not authorize choosing an arbitrary problem or submission.
+- The user may specify a historical PR head, problem, scope, resource limits, and output directory. Without a historical revision, snapshot the current PR head and cover every problem and every Lean version claimed complete in that PR. For other inputs, determine scope using the routing reference.
+- Create a separate run directory outside the repository, such as `lean-verify-problem-or-pr-timestamp` in the system temporary directory. Store `evidence/`, `sources/`, `audit/`, `logs/`, and `report.md`. Trusted tool caches may be reused; do not overwrite the user's working tree. Provide absolute artifact paths and identify where temporary outputs are stored.
+- Ask only when missing information blocks a judgment; continue independent checks. If the specified source or original problem cannot be obtained, report "Insufficient evidence" rather than substituting a similar problem or the latest branch.
 
-## 1. 固定输入、原题与源码版本
+## 1. Pin the input, original problem, and source revision
 
-以下 awards 专用步骤只适用于 awards PR；其他入口按输入定位参考建立同样的原题与证明版本证据，不虚构 JSP 编号或 PR 验收标准。
+The awards-specific steps below apply only to awards PRs. Use the routing reference for other inputs without inventing JSP identifiers or PR acceptance criteria.
 
-通过 GitHub API/连接器或 `gh` 读取 PR 正文、分页文件列表、diff、commits、普通评论、review 及行内评论。必要时读取关联 issue 和完整源文件；API patch 截断时取 Git 快照。记录获取时间与数据缺口。
+Use GitHub tools/API or `gh` to retrieve the PR body, paginated file list, diff, commits, issue comments, reviews, and inline comments. Read linked issues and complete source files when needed; use Git snapshots when API patches are truncated. Record retrieval times and evidence gaps.
 
-独立记录两组版本，禁止混用：
+Keep two sets of revisions distinct:
 
-1. **awards PR**：仓库、PR URL、base/head 仓库和分支、base/head 完整 SHA。审核 head 内容，不把 GitHub 的测试 merge commit 当作提交 head。
-2. **Lean 证明**：原始链接、仓库、项目子目录、提交者指定分支、完整 40 位 commit、源码文件和声明的完全限定名。
+1. **Awards PR:** repository, PR URL, base/head repositories and branches, and full base/head SHAs. Review the head contents; do not mistake GitHub's test merge commit for the submission head.
+2. **Lean proof:** original link, repository, project subdirectory, submitter-specified branch, full 40-character commit SHA, source files, and fully qualified declaration names.
 
-从修改的 `problems/catalog-*.md` 及正文定位 `JSP-xxxxxx`，读取该题的完整条目与原始数学来源。JSP 编号与 Erdős 等原始题号不同。比较 PR base/head 的题目描述，识别 PR 是否缩窄或改写了原题；不得仅按提交者改写后的版本核验。
+Locate `JSP-xxxxxx` in the changed `problems/catalog-*.md` files and PR body. Read the complete entry and original mathematical sources. JSP numbers differ from Erdős and other source identifiers. Compare problem descriptions at PR base/head to detect a narrowed or rewritten problem; do not verify solely against the submitter's revised statement.
 
-优先核验提交者明确指定的源码 commit。若只有分支/标签，解析当前完整 SHA 作为**临时审计快照**并记录时间，但提交版本缺失仍是溯源缺口；不得声称这就是提交时版本。若链接、正文、评论与题库给出冲突版本，列出差异，依据明确的更新说明选择，不能悄悄拼接不同版本证据。
+Prefer the explicitly submitted source commit. If only a branch/tag is supplied, resolve its full SHA as a **temporary audit snapshot** and record the time. The missing submission revision remains a traceability gap; do not claim the snapshot was the version submitted. When links, body, comments, and catalog disagree, list the conflicts and use explicit update evidence to select a version. Do not silently combine evidence from different revisions.
 
-验证 commit 对象存在、checkout HEAD 匹配、文件在该 commit 存在。解析分支当前 tip 并检查指定 commit 是否为其祖先；分支可继续前进，commit 不必等于 tip。删除/强推分支无法验证历史关系时记录限制，不能从当前“不包含”直接断言过去不包含。历史审计后再次读取 PR head；若已变化，报告仅对原快照有效，不无限追随更新。
+Verify that the commit exists, checkout HEAD matches, and the files exist at that commit. Resolve the current branch tip and check whether the selected commit is its ancestor; the branch may advance, so the commit need not equal the tip. If deletion or force-pushing prevents checking historical membership, report that limitation. Current non-membership does not prove past non-membership. Re-read the PR head after the audit; if it changed, limit the report to the original snapshot rather than following updates indefinitely.
 
-## 2. 判断“证明的就是原题”
+## 2. Check that the proof addresses the original problem
 
-按 [目标清单与自动检查](references/automation.md)，从原题独立列出全部要求，建立 `targets.json`；每个要求映射到目标/桥梁，未覆盖要求显式保留。一个清单对应一个固定源码工程，跨仓库/版本分别建清单并在总报告汇总。清单自身也需人工核查，脚本不能发现被清单遗漏的自然语言要求。
+Follow [Target manifests and automated checks](references/automation.md) to independently enumerate all original requirements in `targets.json`. Map each requirement to targets/bridges and explicitly retain uncovered requirements. Use one manifest per pinned source project; create separate manifests for different repositories/revisions and summarize them together. Review the manifest itself: the script cannot detect natural-language requirements omitted from it.
 
-执行 [命题与完整性核对](references/statement-audit.md)，产出“原题要求 → Lean 定义/声明 → 对应关系 → 证据 → 缺口”的覆盖矩阵。
+Follow [Statement and completeness audit](references/statement-audit.md) to produce a matrix: original requirement → Lean definition/declaration → correspondence → evidence → gap.
 
-先从原始来源独立整理目标，再查看提交的 Lean 表述。展开参数、隐式参数、section variables、类型类实例、定义和记号，逐一比对对象、量词、范围、假设、结论和边界情况。形式化可以通过等价表述或更强结论解决原题，但须给出经过核查的蕴涵桥梁。反例也可能完整解决原题，须核查其反驳的是同一命题。
+Establish the intended target from original sources before inspecting the submitted Lean formulation. Expand parameters, implicit arguments, section variables, typeclass instances, definitions, and notation. Compare objects, quantifiers, scope, assumptions, conclusions, and boundary cases. An equivalent formulation or stronger result may solve the problem, but the implication bridge must be checked. A counterexample may also fully resolve it; verify that it refutes the same proposition.
 
-能运行时，在独立审计文件中编写最小目标声明和 `example : IntendedStatement := ...`，连接提交的定理；原题定义应由原始来源和可信基础库建立，不能把可疑定义换个名字当作独立核对。文字到形式命题的对应仍须人工数学审查，不能声称自动证明了自然语言语义一致性。
+When execution is possible, write a minimal target statement and `example : IntendedStatement := ...` in a separate audit file, connecting it to the submitted theorem. Build the intended definitions from original sources and trusted libraries; renaming a suspect definition is not an independent check. Correspondence between prose and a formal statement still requires mathematical review and is not automatically proved by this bridge.
 
-发现范围不匹配仍继续可独立执行的构建/公理检查；分开报告“代码可检查”和“没有解决指定问题”。
+If scope does not match, continue independent build/axiom checks where possible. Report "the code can be checked" separately from "the specified problem is not solved."
 
-## 3. 部署并复现
+## 3. Set up and reproduce
 
-执行 [环境与复现操作](references/reproduction.md)。先运行 `scripts/audit.py preflight` 汇总固定版本、文件和锁文件缺口，再人工核实隔离环境、依赖实际 SHA、工具版本与 checker 兼容性；预检不会运行项目代码，也不证明环境安全。读取提交固定的 `lean-toolchain`、Lake 配置、manifest 和 CI，采用精确工具链与依赖版本；无版本证据时不自行选最新版后宣称原提交通过。
+Follow [Pinned revisions and reproduction](references/reproduction.md). Start with `scripts/audit.py preflight` to identify revision, file, and lockfile gaps. Manually verify isolation, actual dependency SHAs, tool versions, and checker compatibility; preflight neither executes project code nor establishes environment safety. Read the pinned `lean-toolchain`, Lake configuration, manifest, and CI. Use the exact toolchain and dependencies; do not choose the latest versions and claim the original submission passed.
 
-在不暴露凭据或宿主写权限的隔离环境中，完成原项目构建、每个目标模块的显式检查，以及审计文件检查。确认目标是否纳入默认构建，未纳入的目标必须显式检查；库证明无需 `main`，普通程序运行或 `#eval` 输出不替代定理检查。
+In an isolated environment without exposed credentials or host write access, build the original project, explicitly check each target module, and check the audit files. Confirm whether each target belongs to the default build; explicitly check those that do not. Library proofs need no `main`, and ordinary program execution or `#eval` output does not replace theorem checking.
 
-原样干净构建完成后，在已隔离的工程环境中使用 `scripts/audit.py run` 对清单目标逐项构建、源文件检查和公理检查；它不代替干净构建、语义审阅或独立 checker。版本/标识符不受脚本支持时按复现参考人工执行等价检查，记录限制，不改原证明以适配工具。
+After the unmodified clean build, run `scripts/audit.py run` inside the isolated environment to check each target's build, source, and axioms. It does not replace the clean build, semantic review, or independent checkers. For unsupported versions/identifiers, perform equivalent manual checks under the reproduction reference and record limitations; do not modify the proof to fit the tool.
 
-保留命令、工作目录、版本、依赖 SHA、退出码、耗时与完整日志。网络失败、资源耗尽、环境不兼容和定理检查失败分别记录。诊断修复仅放单独副本，列出补丁并重测；修补后的成功不算原提交成功。
+Retain commands, working directories, versions, dependency SHAs, exit codes, elapsed times, and complete logs. Distinguish network failures, resource exhaustion, environment incompatibility, and theorem-check failures. Diagnostic repairs belong in a separate copy with a recorded patch and retest; success after repair is not success of the original submission.
 
-## 4. 证明完整性与可信边界
+## 4. Proof completeness and trust boundaries
 
-对**每个目标定理和审计桥梁**运行 `#check`、`#print`、`#print axioms`，保存输出。对关键定义另行检查实际含义和依赖。关键词扫描只用于定位线索，不能替代传递依赖审计；目标检查命令失败或没有预期输出时绝不能给出“无公理/无 sorry”。
+Run `#check`, `#print`, and `#print axioms` for **every target theorem and audit bridge**, preserving output. Inspect the actual meaning and dependencies of key definitions. Keyword scans locate leads but do not replace transitive dependency audits. Failed commands or missing expected output cannot establish "no axioms/no sorry."
 
-- 目标依赖 `sorryAx`、`admit` 展开结果、占位声明或替代关键数学步骤的未证明公理：不完整。
-- 通常的 `propext`、`Classical.choice`、`Quot.sound`：按经典 Lean 基础说明，不视作缺失证明。
-- 原题本来包含的假设可保留，但要排除额外假设、循环假设和不可能满足的前提；局部假设未必在 `#print axioms` 中出现。
-- 自定义公理逐项核实来源和必要性，不按名称白名单放行；原题涉及公理系统/独立性时应建模其对象层含义，不能在 Lean 元层直接假定待证结论。
-- `native_decide`、`decide +native` 或其他本机计算产生的依赖单列，记录该工具链实际公理名、编译器/运行时/外部实现的信任范围；不等同于 `sorry`，也不记为无额外信任。
-- 检查目标依赖路径中的 `debug.skipKernelTC`、修改环境的元程序、伪造输出、`implemented_by`/`extern` 等。出现相关机制须追踪实际影响，不能仅因出现 `unsafe` 关键字判整个证明无效。
+- A target depending on `sorryAx`, the expansion of `admit`, placeholders, or unproved axioms replacing essential proof steps is incomplete.
+- Treat ordinary `propext`, `Classical.choice`, and `Quot.sound` as the standard classical Lean foundations, not missing proofs.
+- Retain assumptions present in the original problem, but exclude extra, circular, or impossible premises. Local assumptions may not appear in `#print axioms`.
+- Review each custom axiom's source and necessity; do not allow it by name alone. For problems about axiom systems or independence, model the object-level meaning rather than assuming the desired conclusion at Lean's metalevel.
+- Report dependencies from `native_decide`, `decide +native`, or other native computation separately. Record actual axiom names for that toolchain and the compiler/runtime/external implementation being trusted. These are neither equivalent to `sorry` nor free of additional trust.
+- Trace `debug.skipKernelTC`, environment-modifying metaprograms, fabricated output, `implemented_by`/`extern`, and related mechanisms along the target's dependency path. Determine their actual effect; the mere presence of `unsafe` does not invalidate the entire proof.
 
-奖项 PR 应尝试使用与固定工具链兼容的 kernel replay；兼容时进一步用独立定义的 challenge 与 comparator/外部 checker 核对。详见复现参考中的版本适配。记录到底执行了哪一级；工具不可用时说明缺口，不能伪称完成了独立复核。失败只影响实际覆盖的保证，避免把检查器不兼容当成数学反例。
+For award PRs, attempt kernel replay compatible with the pinned toolchain. Where compatible, also use an independently defined challenge with a comparator/external checker. Follow the reproduction reference for version adaptation. Record the levels actually completed; unavailable tools leave a stated gap, not a claim of independent verification. Describe which guarantees a failure affects; checker incompatibility is not a mathematical counterexample.
 
-## 5. 结论与交付
+## 5. Verdict and deliverables
 
-使用 [报告结构](references/report-template.md) 保存自包含的中文 `report.md`，附 `targets.json`、自动检查结果和原始日志。脚本的退出码 0 仅表示列出的目标完成了该级机械检查且只观察到标准公理，不得直接转成“验证通过”或“完整解决”。每个问题分别列：溯源、语义一致性、构建、证明完整性、覆盖程度、复核级别。每个关键发现给出 commit 固定链接或本地 file:line、对应原题来源和日志位置。
+Use the [Report template](references/report-template.md) for a self-contained `report.md`, in English by default, with `targets.json`, automated results, and raw logs. Script exit code 0 only means the listed targets completed that level of mechanical checking with only standard axioms observed. It does not directly establish "Verification passed" or "Fully solved." For each problem, report traceability, semantic correspondence, build results, completeness, coverage, and verification levels. Support every key finding with a commit-pinned link or local file:line, original source, and log location.
 
-总体结论取以下之一，并说明依据：
+Choose and justify one overall verdict:
 
-| 结论 | 条件 |
+| Verdict | Conditions |
 | --- | --- |
-| 验证通过 | 指定版本可追溯；原题全部要求与形式命题对应；原样构建和全部目标检查成功；无证明缺口或未解决额外假设；信任依赖已核实。注明实际复核级别和信任范围。 |
-| 有条件通过 | 全范围语义与检查成立，但依赖明确、可解释的扩展信任，例如本机计算。不得用来放行缺失证明或强于原题的未证明假设。 |
-| 部分覆盖 | 已有经过实际检查的证明覆盖某些子要求，但原题其余范围未解决；不能称完整形式化。 |
-| 验证失败 | 指定提交在匹配环境下检查失败，或有实证表明命题不符、目标含证明缺口等；明确属于哪个维度。 |
-| 证据不足 | 无法获取/固定必要材料、环境无法完成检查、原题含义未明确或关键依赖未核实；不推断数学结果为假。 |
+| Verification passed | The specified revision is traceable; all original requirements match the formal statement; the unmodified build and all target checks pass; no proof gaps or unresolved extra assumptions remain; trust dependencies are verified. State the actual verification levels and trust scope. |
+| Conditional pass | Full semantic coverage and checks hold, but rely on explicit, explainable extended trust, such as native computation. This cannot excuse missing proofs or unproved assumptions stronger than the original problem. |
+| Partial coverage | Checked proofs cover some requirements, but others remain unresolved. This is not a complete formalization. |
+| Verification failed | The specified submission fails in a matching environment, or evidence establishes a statement mismatch, proof gap, or similar defect. Identify the failing dimension. |
+| Insufficient evidence | Required materials cannot be obtained/pinned, checks cannot be completed, the original meaning is unclear, or essential dependencies remain unverified. Do not infer that the mathematical result is false. |
 
-复核级别独立记录为：静态审阅、实际 Lean 检查、kernel replay、独立 challenge + 外部检查；可以记录多个已完成级别。仅静态审阅不能给出“验证通过”。复核失败不得隐藏在总体通过后；先解释失败原因和剩余保证。
+Record verification levels separately: static review, actual Lean checks, kernel replay, and independent challenge + external checking. Multiple completed levels may be listed. Static review alone cannot yield "Verification passed." Do not hide a failed cross-check behind an overall pass; explain its cause and the remaining guarantees.
 
-多题 PR 只有全部题目满足要求才能总体通过；任何已证实失败优先标明，其他阻塞和局部成功仍逐项列出。完整性以原题义务覆盖判定，不按源码行数、定理数量或自创百分比衡量。不自动推导奖项资格、作者身份、首创权或奖金决定。
+A multi-problem PR passes overall only if every problem meets the requirements. Highlight any confirmed failure while listing other blockers and partial successes separately. Judge completeness by coverage of original obligations, not source lines, theorem counts, or invented percentages. Do not infer award eligibility, identity, priority, or prize decisions.
 
-### 必须直接给出明确结论
+### Give an explicit conclusion
 
-报告开头和给用户的最终回复都必须先给出结论，不能仅列检查过程、贴日志或让用户自行阅读报告判断。总体结论从上表选择一个，紧接一句话说明：**在所核验的 commit 上，这份 Lean 提交是否完整解决指定原题，以及为什么。**
+Start both the report and final user response with the verdict, not only a procedure, logs, or a request to read the report. Select a verdict above, then state **whether this Lean submission fully solves the specified original problem at the checked commit, and why**.
 
-逐项明确回答以下问题，每项附决定性证据：
+Answer each question explicitly with decisive evidence:
 
-1. **证明对象是否就是指定原题？** 是 / 否 / 暂无法确认。指出关键定义、量词和范围的对应或错配。
-2. **指定 commit 是否实际验证通过？** 是 / 否 / 未完成验证。写明目标检查结果；不能拿其他 commit 或修补版替代。
-3. **是否完整解决原题？** 是 / 否 / 暂无法确认。完整反证也可回答“是”，但说明解决方式；仅有部分结果、缺失子题、目标证明依赖 `sorry` 或循环假设时必须回答“否”。只有构建失败而未确认数学缺口时，不据此断言不存在完整证明。
-4. **是否满足本次验证的 Lean 完整性要求（有 PR 时为其验收要求）？** 满足 / 不满足 / 暂无法确认。限定为数学与形式化验证范围，不代表合并或授奖决定。
+1. **Does the proof address the specified original problem?** Yes / No / Cannot yet determine. Identify correspondence or mismatch in key definitions, quantifiers, and scope.
+2. **Did the specified commit actually pass verification?** Yes / No / Verification incomplete. State target-check results; do not substitute another commit or a patched version.
+3. **Does it fully solve the original problem?** Yes / No / Cannot yet determine. A complete disproof may warrant "Yes," with an explanation. Partial results, missing subproblems, or a target depending on `sorry` or circular assumptions require "No." A build failure alone, without a confirmed mathematical gap, does not establish that no complete proof exists.
+4. **Does it meet the Lean completeness requirements for this verification (the PR's acceptance requirements, when applicable)?** Meets / Does not meet / Cannot yet determine. Limit this judgment to mathematics and formal verification, not merging or awards.
 
-验收判定规则：全部必要检查通过且全题覆盖时为“满足”；已确认命题错配、证明缺口、仅部分覆盖或指定版本在匹配环境下检查失败时为“不满足”；必要证据/检查缺失且没有已确认的否决项时为“暂无法确认”。“有条件通过”必须点明扩展信任的具体内容及其对结论的影响；只有适用的验收标准明确接受该信任时才可判“满足（在所列信任范围下）”，否则验收判“暂无法确认”，不能默认接受未知标准。
+Acceptance rules: use "Meets" when all necessary checks pass with full coverage; "Does not meet" for a confirmed mismatch, proof gap, partial coverage, or failure of the specified version in a matching environment; otherwise use "Cannot yet determine" when necessary evidence/checks are missing and no disqualifying defect is confirmed. A "Conditional pass" must explain the extended trust and its effect. Only if the applicable acceptance criteria explicitly accept that trust may the answer be "Meets (within the stated trust scope)." Otherwise use "Cannot yet determine"; do not assume unspecified criteria accept it.
 
-明确结论不等于强行二选一：“暂无法确认”也是有效结论，但必须列出具体缺失证据、阻塞的判断和完成确认所需的最小动作。不得以“基本没问题”“大概率通过”“看起来完整”等模糊语句收尾。多题逐题判定后再汇总，不能用某题通过掩盖其他题的失败或未知。
+An explicit conclusion need not be binary. "Cannot yet determine" is valid if accompanied by missing evidence, affected judgments, and the minimum next actions. Avoid vague endings such as "mostly fine," "probably passes," or "looks complete." Assess each problem before summarizing; one success cannot conceal another failure or unknown.
 
-最终回复保留总体结论、以上四项判断、主要依据/未完成项和报告链接。只在用户明确要求时发布报告或评论。
+The final response includes the overall verdict, all four judgments, key evidence/outstanding checks, and the report link. Publish reports or comments only when explicitly requested.
 
-## 维护与回归
+## Maintenance and regression checks
 
-更新自动检查脚本后运行 `python3 -m unittest discover -s tests -v`。设置 `LEAN_AUDIT_TEST_LAKE` 为已安装、可信的 Lake 绝对路径，可额外运行无第三方依赖的真实 Lean 回归；这些测试只执行随技能维护的固定样例。详见 [自动检查与测试边界](references/automation.md)。不以模拟日志测试冒充实际 Lean 检查。
+After modifying the automation script, run `python3 -m unittest discover -s tests -v` from the skill directory. Optionally set `LEAN_AUDIT_TEST_LAKE` to an installed, trusted Lake executable's absolute path for real Lean regression tests without third-party dependencies. These run only the skill's fixed fixtures. See [Automation and test boundaries](references/automation.md). Do not present simulated-output tests as actual Lean checks.

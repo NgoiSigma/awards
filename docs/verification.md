@@ -9,9 +9,9 @@ candidate registration do not require a prior solver candidate or award record.
 The solver need not have registered or submitted a claim. Review combined
 submissions by contribution type without imposing a contributor-registration order.
 
-Repository CI validates record structure and references. It does not run proof repositories, establish mathematical truth, decide awards, or authorize payments. A source link or successful build alone is not a completed verification record.
+A source link or successful build alone is not a completed verification record. Maintainers review the evidence and reproduce proof verification before acceptance.
 
-See the [record guide](records.md) for public evidence fields. Publish only evidence authorized for public release.
+See the [record guide](records.md) for maintaining public evidence. Publish only evidence authorized for public release.
 
 ## Recommended Lean pre-submission check
 
@@ -95,8 +95,7 @@ passed when the checks actually support that conclusion.
 
 The audit helper's exit code 0 means only that its listed mechanical checks
 succeeded with the observed standard axioms. It does not establish original
-problem correspondence or a complete solution. Repository CI likewise does not
-certify the report or run the external proof. Maintainers independently examine
+problem correspondence or a complete solution. Maintainers independently examine
 the original problem and proof and reproduce the checks; a checkbox, summary or
 report alone cannot establish acceptance. They may request supporting logs when
 resolving a verification issue.
