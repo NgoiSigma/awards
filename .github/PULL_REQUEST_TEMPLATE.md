@@ -9,12 +9,18 @@ complete solutions and proof references, following the
 For claims, public review and challenges, see the
 [award process](https://github.com/TheJustinSunPrize/awards/blob/main/docs/award-process.md).
 
+We recommend checking open, merged and closed PRs for the same problem and
+contribution type before submitting. Linking related PRs and explaining how your
+contribution differs can help avoid duplicate work. See the
+[pre-submission suggestions](https://github.com/TheJustinSunPrize/awards/blob/main/CONTRIBUTING.md#before-opening-a-pr).
+
 ## Problem
 
 - Problem ID(s): JSP-______
 - Original problem source and exact location (page, section or problem number): REPLACE_WITH_LINK_AND_LOCATION
 - Current entry and proposed change: REPLACE_WITH_DETAILS
 - Related issue, if any: REPLACE_WITH_LINK_OR_NONE
+- Related PRs and how this contribution differs, including any issue found in an existing submission and supporting evidence (optional): REPLACE_WITH_DETAILS_OR_REMOVE
 - For solver/publication updates: public proof or publication, relevant theorem/pages, version or date: REPLACE_WITH_LINK_AND_DETAILS
 
 Solver-only submissions complete Problem and Attribution and remove the Lean-only

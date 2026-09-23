@@ -22,7 +22,7 @@ Verification evidence supports review. A successful proof build does not establi
 
 The [record guide](records.md) describes how to maintain these records and supporting evidence.
 
-The [problem bank](../problems/README.md) is a separate catalog. Its **Eligible to claim** flag is **Yes** for records marked **Solved** with a **Yes** Lean proof status; **Pending verification** marks an item for possible eligibility review. Neither flag publishes a candidate or announces an award.
+The [problem bank index](../problems/README.md) displays **Current status** and **Lean proof** separately. Both the index and detail tables use **Open/Solved** for **Current status**. **Eligible to claim** is their shared screening flag: **Current status** must be **Solved** and **Lean proof** must be **Yes** for either award to proceed. Until eligibility is established, both claim statuses in the index are **Unavailable**. Once eligible, each role is **Unclaimed** until its candidate is registered in `candidates/`, then **Claimed**. It remains **Claimed** after moving to a confirmed award record in `awards/` and removal from the candidate register. These statuses do not announce an award or confirm payment eligibility.
 
 See the [award process](award-process.md) for the steps from submission to award,
 and the [public notice table](../candidates/README.md#candidate-register) for

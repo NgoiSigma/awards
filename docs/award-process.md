@@ -3,7 +3,7 @@
 [Home](../README.md) · [Contribution guidelines](../CONTRIBUTING.md)
 
 Submit contribution evidence → review the mathematical solution and verify any
-submitted Lean proof → merge the participant PR → maintainers publish candidates
+submitted Lean proof → merge the participant PR where required → maintainers publish candidates
 in `candidates/` → start 14-day public review for each published contribution type,
 with claims and identity checks handled alongside it → written recipient
 confirmation → announcement, prize money and medal.
@@ -19,6 +19,12 @@ seed phrases. Send payment network/address, medal delivery address and private
 identity materials only by email; do not post them on GitHub.
 
 ## Step 1: Submit your contribution for verification
+
+Before opening a PR, we recommend [checking for existing submissions](../CONTRIBUTING.md#before-opening-a-pr)
+for the same problem and contribution type, including open, merged and closed PRs.
+Consider linking related submissions and explaining how your contribution differs.
+If you find a problem with an existing submission, sharing specific details and
+checkable evidence can help reviewers assess it.
 
 Choose a problem from the [problem bank](../problems/README.md),
 [fork this repository](https://github.com/TheJustinSunPrize/awards/fork), update
@@ -42,6 +48,8 @@ solver contribution and public authorship evidence in the Problem and Attributio
 sections. Maintainers check the result and attribution before merging.
 
 After the solver PR passes review and merges, retain the solver application.
+Solvers whose contributions were already recorded directly by the project may
+apply under the [recorded-solver exception](#open-a-claim-award-issue) below.
 If formalization is missing, preserve the application and its submission time
 without starting the 14-day public review. A Lean contributor can be verified and
 registered independently of whether the solver has applied or been registered.
@@ -108,29 +116,55 @@ for pull requests or mentions as well.
 
 ### Open a claim-award issue
 
-After the relevant PR is merged, open a
+After your contribution PR in **TheJustinSunPrize/awards** has merged into **main**,
+or if you meet the recorded-solver exception below, open a
 [claim-award issue](https://github.com/TheJustinSunPrize/awards/issues/new?template=claim-award.yml)
 and complete the JSP number in its `[Award claim] JSP-` title. Include the
-problem-bank link and your merged PR. Apply only for yourself using your own
+problem-bank link and any required merged PR. Apply only for yourself using your own
 GitHub account; proxy applications and collection for others are not accepted.
 Choose mathematical solution, Lean formalization, or both.
+
+A pending PR or a proof repository URL does not satisfy the merged-PR requirement.
+Maintainers check the linked PR's merge status before accepting the application.
+For an early claim, explain that the requirement is not yet met and defer
+acceptance until the contribution PR merges. The applicant should then update
+the existing issue rather than open a duplicate.
+
+**Recorded-solver exception:** A solver already credited in the problem bank whose
+contribution was directly recorded by the project and has no applicant-submitted
+PR may leave **Merged submission PR** blank for their mathematical-solution claim.
+Reference the recorded contribution and attribution evidence in **Contribution
+evidence and attribution clarification**. Maintainers verify those records before
+accepting the claim. This applies to all such recorded solvers, not only the
+initial award recipients. Lean formalization claims, including the Lean role in
+a both-role claim, still require a merged contribution PR.
 
 Fill **Original Lean proof repository** according to your role:
 
 | Claim role | What to enter |
 | --- | --- |
 | Lean formalization or both | The original repository already recorded as the problem's formalization source, owned by your account or an organization. Organization repositories require verifiable evidence of your contribution. |
-| Mathematical solution only, with a recorded formalization | Optional: leave blank or link the recorded formalization repository. It need not belong to you; maintainers use the catalog's source. |
-| Mathematical solution only, without a recorded formalization | Leave blank (`None` is also accepted). The application is retained while awaiting formalization. |
+| Mathematical solution only | Leave this field blank. |
 
 The form accepts a blank repository field so solver-only applicants can submit.
 For Lean or both-role claims, the repository remains a review requirement;
 maintainers request a missing URL before approving the claim.
 
-**Eligible to claim: Yes** remains the catalog's screening flag for a solved
-problem with a Lean proof. A solver whose complete solution has been accepted may
-register an application while formalization is missing, even though that flag is
-not Yes. This does not start public review or permit payment.
+Both awards require an accepted mathematical solution and a verified complete
+Lean proof. The catalog's shared **Eligible to claim** flag is **Yes** only when
+**Current status** is **Solved** and **Lean proof** is **Yes**. The two claim-status
+columns are maintained only in the index. While eligibility
+is **No** or **Pending verification**, both **Solver claim status** and **Lean
+claim status** are **Unavailable**. Once eligible, each role is **Unclaimed**
+until registered in `candidates/`, then **Claimed**. The role remains **Claimed**
+when it moves to a confirmed award record in `awards/`, even after its candidate
+entry is removed. A claim issue alone does not change the status to **Claimed**.
+A solver whose complete solution PR has merged, or who meets the
+recorded-solver exception, may register an application while formalization is
+missing. Both claim statuses remain **Unavailable**; the application does not
+start public review or permit payment. Once a complete Lean formalization has
+been verified and accepted, the solver's claim can proceed through public review,
+identity verification and recipient confirmation under the same award process.
 
 The **Follow-up contact email** in the issue is your public correspondence address;
 no extra comment is needed to designate it. Use your GitHub account as your public
@@ -141,7 +175,7 @@ by email.
 
 Every applicant must send an identity-verification email from the follow-up
 address in their claim issue to **thejustinsunprize@hejustinsun.com**, linking the
-issue and merged PR and using the [email template below](#email-template).
+issue and any merged submission PR and using the [email template below](#email-template).
 This applies to mathematical-solution-only, Lean-only and both-role claims.
 Existing source attribution does not waive the email requirement. Maintainers
 verify the applicant's identity and claimed contribution; written recipient
@@ -161,7 +195,7 @@ The [public notice table](../candidates/README.md#candidate-register) lists sepa
 times for mathematical solution and Lean formalization. After the mathematical
 solution has passed review and formalization has been verified, maintainers
 publish the candidates in
-`candidates/` after the participant PR merges. **Each contribution type's 14-day
+`candidates/` after any required participant PR merges. **Each contribution type's 14-day
 clock starts when its candidate is added to the public register and public
 notice begins.** Record the actual public-notice start in UTC; the scheduled end
 is 14 full days later. Do not derive the start from a PR's merge time.
@@ -263,7 +297,8 @@ Subject: [Award claim] JSP-000305
 Required:
 - Name or organization name:
 - JSP problem ID:
-- Claim issue and merged PR links:
+- Claim issue link:
+- Merged submission PR links (if required):
 - Role: mathematical solution / Lean formalization / both
 - Identity-verification method and corresponding public records:
 

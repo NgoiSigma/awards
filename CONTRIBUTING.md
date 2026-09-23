@@ -11,14 +11,15 @@ review, challenges and delivery.
 | --- | --- |
 | Submit a complete solution, Lean proof reference or supported catalog update | [PR template](.github/PULL_REQUEST_TEMPLATE.md) and the submission requirements below. |
 | Recommend a problem | [Recommendation form](.github/ISSUE_TEMPLATE/recommend-problem.yml). |
-| Claim an award for your own contribution | [Claim form](.github/ISSUE_TEMPLATE/claim-award.yml), after the contribution PR merges. Follow the [application and identity steps](docs/award-process.md#step-2-apply-and-participate-in-public-review). |
+| Claim an award for your own contribution | [Claim form](.github/ISSUE_TEMPLATE/claim-award.yml), after the contribution PR merges or under the recorded-solver exception. Follow the [application and identity steps](docs/award-process.md#step-2-apply-and-participate-in-public-review). |
 | Correct a record | [Correction form](.github/ISSUE_TEMPLATE/correction.yml), with the current text, proposed change and sources. |
 | Challenge a candidate or announced award | [Dispute form](.github/ISSUE_TEMPLATE/dispute.yml), with the disputed claim and public evidence. Submit replacement proofs in a linked PR. |
+| Share feedback, suggestions or questions | [Feedback form](.github/ISSUE_TEMPLATE/feedback.yml). |
 | General conversation | [Discussions](docs/discussions-notice.md). |
 
 Update existing PRs and issues for the same contribution instead of creating
-duplicates. Maintainers respond to recommendations, claims, corrections and
-disputes in their issue threads. Forms do not establish award entitlement.
+duplicates. Maintainers respond to recommendations, claims, corrections,
+disputes and feedback in their issue threads. Forms do not establish award entitlement.
 
 ## Pull requests
 
@@ -27,6 +28,32 @@ disputes in their issue threads. Forms do not establish award entitlement.
 - Disclose relevant conflicts using public professional information only.
 - Review the complete diff and commit history for private material. Keep identity documents, private contacts, payment/delivery details and internal assessment materials out of the repository. Use the [official email](docs/award-process.md#before-you-start) for private information.
 - Retain third-party attribution and licenses; submit only material you are entitled to contribute. See [LICENSE](LICENSE) and [LICENSE-CONTENT](LICENSE-CONTENT).
+
+## Before opening a PR
+
+We recommend checking whether someone has already submitted the same contribution
+before opening a PR. You can search [all PRs](https://github.com/TheJustinSunPrize/awards/pulls?q=is%3Apr)
+(open, merged and closed) by JSP problem ID, problem name and proof/publication
+reference, and check the current catalog entry and candidate record. Compare
+mathematical-solution information and Lean-formalization information separately:
+a solver submission does not by itself duplicate a Lean contribution for the same
+problem.
+
+If you find related submissions, consider linking them and explaining how your
+contribution differs. When the same contribution is already submitted or recorded,
+we encourage reviewing the existing submission before opening another PR that
+repeats the same information. This can help avoid duplicate work for contributors
+and reviewers.
+
+If you find a problem with an existing submission, it is helpful to identify the
+affected PR and exact publication or proof commit, describe the error, and share
+checkable evidence (such as a statement mismatch, missing case or reproducible
+verification failure). You can comment on the existing PR or use the
+correction/dispute route above, with a linked replacement PR when needed. Evidence-backed priority
+or attribution corrections remain subject to the
+[challenge process](docs/award-process.md#the-14-day-public-review).
+An earlier PR opening time alone does not establish priority. For changes to your
+own pending submission, we recommend updating the existing PR.
 
 ## External solver and Lean submissions
 
@@ -40,7 +67,9 @@ Fork this repository and update the relevant existing
 `problems/catalog-XXXX-XXXX.md` file using the PR template. External submissions
 may change **Current status** (including **Proof contributors:**), **Lean proof**,
 **Attribution basis**, and **Publication details**. Use **Open** or **Solved** as
-the status. Maintainers reconcile index and eligibility fields after review.
+the status in both the index and detail tables.
+Maintainers reconcile the index and eligibility fields after review, and maintain
+each role's claim status in the index using the candidate and confirmed award records.
 Use an issue for other corrections or requests.
 
 Provide evidence for the contribution you are submitting:

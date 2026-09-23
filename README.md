@@ -21,6 +21,9 @@ Award entries are confirmed and publicly announced decisions; candidates are tra
 
 ## Participate
 
+We recommend [checking existing PRs for the same problem and contribution type](CONTRIBUTING.md#before-opening-a-pr)
+before submitting to help avoid duplicate work.
+
 Submit complete solution and proof references through the
 [PR template](.github/PULL_REQUEST_TEMPLATE.md). Read the
 [contribution guidelines](CONTRIBUTING.md) for evidence requirements and the

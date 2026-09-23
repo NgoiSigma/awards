@@ -18,7 +18,7 @@ attribution through a linked correction or PR before approval.
 
 Every applicant, including Lean-only and both-role claimants, must complete the
 [identity email step](award-process.md#complete-identity-verification-by-email)
-from the issue's follow-up address, linking the claim and merged PR. Existing
+from the issue's follow-up address, linking the claim and any merged submission PR. Existing
 source attribution does not waive this step. Sending a message or checking a
 form box alone does not establish identity; all recipients need written
 confirmation before an award.
